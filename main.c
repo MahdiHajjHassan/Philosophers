@@ -37,6 +37,8 @@ int	main(int argc, char **argv)
 
 	if (!setup_simulation(argc, argv, &data))
 		return (1);
+	while (!simulation_stopped(&data))
+		usleep(1000);
 	join_all_threads(&data);
 	destroy_data(&data);
 	return (0);

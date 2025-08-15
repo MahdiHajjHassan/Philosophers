@@ -31,7 +31,7 @@ int	start_simulation(t_data *data)
 
 int	take_forks_and_eat(t_philo *philo, int first, int second)
 {
-	if (!take_both_forks(philo))
+	if (!take_both_forks(philo, first, second))
 		return (0);
 	eat_and_release_forks(philo, first, second);
 	return (1);
@@ -54,17 +54,23 @@ void	*routine(void *arg)
 
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == 0)
-		ft_usleep(philo->data->time_to_eat, philo->data);
+		usleep(philo->data->time_to_eat * 1000);
 	while (!simulation_stopped(philo->data))
 	{
-		if (handle_eating(philo))
-			return (NULL);
-		if (philo->data->num_philos % 2 == 1)
-			ft_usleep(philo->data->time_to_eat / 2, philo->data);
-		if (simulation_stopped(philo->data))
+		if (philo->data->meals_to_eat != -1
+			&& philo->meals_count >= philo->data->meals_to_eat)
 			break ;
 		print_message(philo, "is thinking");
-		ft_usleep(philo->data->time_to_sleep, philo->data);
+		if (philo->data->num_philos % 2 == 1)
+			usleep(philo->data->time_to_eat * 500);
+		if (simulation_stopped(philo->data))
+			break ;
+		if (!handle_eating(philo))
+			break ;
+		if (simulation_stopped(philo->data))
+			break ;
+		print_message(philo, "is sleeping");
+		usleep(philo->data->time_to_sleep * 1000);
 	}
 	return (NULL);
 }

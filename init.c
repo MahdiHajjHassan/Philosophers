@@ -100,9 +100,9 @@ int	init_data(t_data *data)
 	data->start_time = get_time();
 	if (!init_fork_mutexes(data))
 		return (0);
-	if (!init_philos(data))
-		return (0);
 	if (!init_other_mutexes(data))
+		return (0);
+	if (!init_philos(data))
 	{
 		pthread_mutex_destroy(&data->death);
 		pthread_mutex_destroy(&data->print);

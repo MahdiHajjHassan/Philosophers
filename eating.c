@@ -14,34 +14,36 @@
 
 int	handle_single_philo(t_philo *philo)
 {
+	pthread_mutex_lock(&philo->data->forks[philo->left_fork]);
+	print_message(philo, "has taken a fork");
+	pthread_mutex_unlock(&philo->data->forks[philo->left_fork]);
 	while (!simulation_stopped(philo->data))
-		ft_usleep(1, philo->data);
+		usleep(1000);
 	return (0);
 }
 
-int	take_both_forks(t_philo *philo)
+int	take_both_forks(t_philo *philo, int first, int second)
 {
-	int	first;
-	int	second;
-
-	first = philo->id - 1;
-	second = philo->id % philo->data->num_philos;
-	pthread_mutex_lock(&philo->data->forks[first]);
-	if (simulation_stopped(philo->data))
+	while (!simulation_stopped(philo->data))
 	{
-		pthread_mutex_unlock(&philo->data->forks[first]);
-		return (0);
+		pthread_mutex_lock(&philo->data->forks[first]);
+		if (simulation_stopped(philo->data))
+		{
+			pthread_mutex_unlock(&philo->data->forks[first]);
+			return (0);
+		}
+		pthread_mutex_lock(&philo->data->forks[second]);
+		if (simulation_stopped(philo->data))
+		{
+			pthread_mutex_unlock(&philo->data->forks[second]);
+			pthread_mutex_unlock(&philo->data->forks[first]);
+			return (0);
+		}
+		print_message(philo, "has taken a fork");
+		print_message(philo, "has taken a fork");
+		return (1);
 	}
-	print_message(philo, "has taken a fork");
-	pthread_mutex_lock(&philo->data->forks[second]);
-	if (simulation_stopped(philo->data))
-	{
-		pthread_mutex_unlock(&philo->data->forks[second]);
-		pthread_mutex_unlock(&philo->data->forks[first]);
-		return (0);
-	}
-	print_message(philo, "has taken a fork");
-	return (1);
+	return (0);
 }
 
 void	eat_and_release_forks(t_philo *philo, int first, int second)
@@ -51,7 +53,7 @@ void	eat_and_release_forks(t_philo *philo, int first, int second)
 	philo->meals_count++;
 	pthread_mutex_unlock(&philo->meal_mutex);
 	print_message(philo, "is eating");
-	ft_usleep(philo->data->time_to_eat, philo->data);
+	usleep(philo->data->time_to_eat * 1000);
 	pthread_mutex_unlock(&philo->data->forks[second]);
 	pthread_mutex_unlock(&philo->data->forks[first]);
 }

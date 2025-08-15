@@ -29,28 +29,9 @@ long long	get_time(void)
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-void	ft_usleep(long long time_ms, t_data *data)
-{
-	long long	start_time;
-
-	start_time = get_time();
-	while (get_time() - start_time < time_ms)
-	{
-		if (simulation_stopped(data))
-			return ;
-		usleep(100);
-	}
-}
-
 int	error(char *message)
 {
-	int	i;
-
-	i = 0;
-	while (message[i])
-		i++;
-	write(2, message, i);
-	write(2, "\n", 1);
+	printf("%s\n", message);
 	return (0);
 }
 

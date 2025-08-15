@@ -88,6 +88,6 @@ void	monitor(t_data *data)
 			stop_simulation(data);
 			return ;
 		}
-		ft_usleep(2, data);
+		usleep(2000);
 	}
 }
