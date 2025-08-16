@@ -20,8 +20,16 @@ void	*monitor_wrapper(void *arg)
 
 void	get_forks_order(t_philo *philo, int *first, int *second)
 {
-	*first = philo->left_fork;
-	*second = philo->right_fork;
+	if (philo->left_fork < philo->right_fork)
+	{
+		*first = philo->left_fork;
+		*second = philo->right_fork;
+	}
+	else
+	{
+		*first = philo->right_fork;
+		*second = philo->left_fork;
+	}
 }
 
 int	create_philosopher_threads(t_data *data)
